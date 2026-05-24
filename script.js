@@ -1,63 +1,76 @@
-const time = document.getElementById("time");
-const button = document.getElementById("toggle-btn");
+// Get the HTML elements
+const timeElement = document.getElementById("time");
+const dateElement = document.getElementById("date");
+const toggleBtn = document.getElementById("toggle-btn");
 
-let format24 = false;
+// Start with 12-hour format
+let is24Hour = false;
 
-function showTime() {
+// Function to update time and date
+function updateTime() {
 
-    const now = new Date();
+  // Get current date and time
+  const now = new Date();
 
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    let seconds = now.getSeconds();
+  // Get hours, minutes and seconds
+  let hours = now.getHours();
+  let minutes = String(now.getMinutes()).padStart(2, "0");
+  let seconds = String(now.getSeconds()).padStart(2, "0");
 
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
+  // Variable to store the final time
+  let displayTime;
 
-    if (seconds < 10) {
-        seconds = "0" + seconds;
-    }
+  // If 24-hour format is selected
+  if (is24Hour) {
 
-    if (format24) {
+    // Example: 15:05:08
+    displayTime =
+      `${String(hours).padStart(2, "0")}:${minutes}:${seconds}`;
 
-        if (hours < 10) {
-            hours = "0" + hours;
-        }
+  } else {
 
-        time.textContent =
-            hours + ":" + minutes + ":" + seconds;
+    // Decide AM or PM
+    let ampm = hours >= 12 ? "PM" : "AM";
 
-    }
+    // Convert 24-hour time to 12-hour time
+    hours = hours % 12 || 12;
 
-    else {
+    // Example: 3:05:08 PM
+    displayTime =
+      `${hours}:${minutes}:${seconds} ${ampm}`;
+  }
 
-        let ampm = "AM";
+  // Show time on the webpage
+  timeElement.textContent = displayTime;
 
-        if (hours >= 12) {
-            ampm = "PM";
-        }
+  // Get day, month and year
+  let day = String(now.getDate()).padStart(2, "0");
+  let month = String(now.getMonth() + 1).padStart(2, "0");
+  let year = now.getFullYear();
 
-        if (hours > 12) {
-            hours = hours - 12;
-        }
-
-        if (hours == 0) {
-            hours = 12;
-        }
-
-        time.textContent =
-            hours + ":" + minutes + ":" + seconds + " " + ampm;
-    }
+  // Show date on the webpage
+  dateElement.textContent = `${day}/${month}/${year}`;
 }
 
-button.onclick = function () {
+// Run this code when button is clicked
+toggleBtn.addEventListener("click", () => {
 
-    format24 = !format24;
+  // Change format
+  // false → true
+  // true → false
+  is24Hour = !is24Hour;
 
-    showTime();
-};
+  // Change button text
+  toggleBtn.textContent = is24Hour
+    ? "Switch to 12-hour format"
+    : "Switch to 24-hour format";
 
-setInterval(showTime, 1000);
+  // Refresh time immediately
+  updateTime();
+});
 
-showTime();
+// Show time when page loads
+updateTime();
+
+// Update time every 1 second
+setInterval(updateTime, 1000);
